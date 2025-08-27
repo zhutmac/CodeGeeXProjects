@@ -17,6 +17,16 @@ function hide(id) {
   qs(id).classList.add("hidden");
 }
 
+// Reset the add material modal to its initial state
+function resetAddMaterialModal() {
+  qs("material-file").value = "";
+  qs("file-name").textContent = "";
+  hide("material-preview");
+  hide("processing-indicator");
+  qs("btn-confirm-add-material").disabled = true;
+  window.currentMaterialData = null;
+}
+
 // Render projects table
 function renderProjects() {
   const tbody = qs("projects-tbody");
@@ -290,16 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Add Material button clicked");
     show("modal-add-material");
   });
-
-  // Function to reset the add material modal
-  function resetAddMaterialModal() {
-    qs("material-file").value = "";
-    qs("file-name").textContent = "";
-    hide("material-preview");
-    hide("processing-indicator");
-    qs("btn-confirm-add-material").disabled = true;
-    window.currentMaterialData = null;
-  }
 
   // Close Add Material modal
   document.addEventListener("click", function(event) {
