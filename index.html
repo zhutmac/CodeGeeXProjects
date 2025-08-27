@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' blob: data:;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Audit – CSP Safe</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="container">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+    <button id="btn-lang-en" class="btn" style="background:#f3f4f6;color:#111;margin-right:5px;font-size:12px">EN</button>
+    <button id="btn-lang-zh" class="btn" style="background:#f3f4f6;color:#111;font-size:12px">中文</button>
+  </div>
+  <div id="view-login" class="card" style="max-width:460px;margin:30px auto;">
+    <h1 data-i18n="title">Material Audit</h1>
+    <small data-i18n="subtitle">Demo (Projects → Materials → Audit)</small>
+    <div style="margin-top:12px;">
+      <label data-i18n="email">Email</label>
+      <input id="email" type="text" placeholder="engineer@company.com" data-i18n="email">
+    </div>
+    <div style="margin-top:8px;">
+      <label data-i18n="password">Password</label>
+      <input id="pwd" type="password" placeholder="********" data-i18n="password">
+    </div>
+    <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+      <span style="color:#6b7280;font-size:12px" data-i18n="anyEmailPassword">* Any email/password works</span>
+      <button id="btn-login" class="btn" data-i18n="signIn">Sign in</button>
+    </div>
+  </div>
+
+  <div id="view-projects" class="hidden">
+    <div class="card">
+      <h1 data-i18n="allProjects">All Projects</h1><small data-i18n="selectProject">Select a project to view its materials.</small>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th data-i18n="projectName">Project Name</th>
+          <th data-i18n="projectNumber">Project Number</th>
+          <th data-i18n="createdBy">Created By</th>
+          <th data-i18n="createdDate">Created Date</th>
+          <th data-i18n="status">Status</th>
+          <th data-i18n="action">Action</th>
+        </tr></thead>
+        <tbody id="projects-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="view-materials" class="hidden">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1 id="mat-proj-title">Project</h1>
+        <small id="mat-proj-sub"></small>
+      </div>
+      <button id="btn-back-projects" class="btn" style="background:#f3f4f6;color:#111" data-i18n="back">← Back</button>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h1 data-i18n="materials">Materials</h1>
+        <button id="btn-add-material" class="btn" data-i18n="addMaterial">Add Material</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th data-i18n="materialType">Material Type</th>
+          <th data-i18n="materialName">Material Name</th>
+          <th data-i18n="brand">Brand</th>
+          <th data-i18n="model">Model</th>
+          <th data-i18n="lastSubmission">Last Submission</th>
+          <th data-i18n="status">Status</th>
+          <th data-i18n="action">Action</th>
+        </tr></thead>
+        <tbody id="materials-tbody"></tbody>
+      </table>
+    </div>
+    
+    <!-- Add Material Modal -->
+    <div id="modal-add-material" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 data-i18n="addNewMaterial">Add New Material</h2>
+          <span class="close" id="close-add-material">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div style="margin-bottom:16px">
+            <label data-i18n="uploadMaterialFile">Upload Material File</label>
+            <div class="file-upload-container">
+              <input type="file" id="material-file" accept=".pdf,.jpg,.jpeg,.png" class="file-upload-input">
+              <label for="material-file" class="file-upload-label" data-i18n="chooseFile">Choose File</label>
+              <span id="file-name" class="file-name"></span>
+            </div>
+            <small style="color:var(--muted);margin-top:8px;display:block" data-i18n="processingNote">* System will automatically extract material information from the uploaded file</small>
+          </div>
+          
+          <div id="processing-indicator" class="hidden" style="text-align:center;padding:20px">
+            <div class="spinner"></div>
+            <p style="margin-top:10px" data-i18n="processingFile">Processing file, please wait...</p>
+          </div>
+          
+          <div id="material-preview" class="hidden" style="margin-top:16px">
+            <h3 data-i18n="materialPreview">Material Information</h3>
+            <div style="background:#f8fafc;border-radius:10px;padding:16px;margin-top:8px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div>
+                  <small style="color:var(--muted);display:block" data-i18n="materialType">Material Type</small>
+                  <p id="preview-type" style="margin:0">-</p>
+                </div>
+                <div>
+                  <small style="color:var(--muted);display:block" data-i18n="materialName">Material Name</small>
+                  <p id="preview-name" style="margin:0">-</p>
+                </div>
+                <div>
+                  <small style="color:var(--muted);display:block" data-i18n="brand">Brand</small>
+                  <p id="preview-brand" style="margin:0">-</p>
+                </div>
+                <div>
+                  <small style="color:var(--muted);display:block" data-i18n="model">Model</small>
+                  <p id="preview-model" style="margin:0">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button id="btn-confirm-add-material" class="btn" data-i18n="confirmAdd" disabled>Confirm</button>
+            <button id="btn-cancel-add-material" class="btn btn-secondary" data-i18n="cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-audit" class="hidden">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1 id="audit-title">Project Name</h1>
+        <small id="audit-sub">Material / Vendor</small>
+      </div>
+      <button id="btn-back-materials" class="btn" style="background:#f3f4f6;color:#111" data-i18n="back">← Back</button>
+    </div>
+    <div class="card">
+      <h1 data-i18n="auditPage">Material Audit</h1>
+      <form id="audit-form">
+        <div style="margin-top:12px">
+          <label data-i18n="materialType">Material Type</label>
+          <input id="audit-type" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label data-i18n="materialName">Material Name</label>
+          <input id="audit-name" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label data-i18n="brand">Brand</label>
+          <input id="audit-brand" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label data-i18n="model">Model</label>
+          <input id="audit-model" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label>Vendor</label>
+          <input id="audit-vendor" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label>Last Submission Date</label>
+          <input id="audit-date" type="text" readonly>
+        </div>
+        <div style="margin-top:8px">
+          <label>Current Status</label>
+          <input id="audit-status" type="text" readonly>
+        </div>
+        <div style="margin-top:12px">
+          <label data-i18n="auditResult">Audit Result</label>
+          <select id="audit-result" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px">
+            <option value="" data-i18n="auditResult">Select audit result</option>
+            <option value="approved" data-i18n="approved">Approved</option>
+            <option value="rejected" data-i18n="rejected">Rejected</option>
+            <option value="pending" data-i18n="pending">Pending Review</option>
+          </select>
+        </div>
+        <div style="margin-top:8px">
+          <label data-i18n="comments">Comments</label>
+          <textarea id="audit-comments" rows="4" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px"></textarea>
+        </div>
+        <div style="margin-top:14px;display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:12px" data-i18n="auditCommentsRequired">* Audit comments are required</span>
+          <button type="button" id="btn-submit-audit" class="btn" data-i18n="submitAudit">Submit Audit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="js/languages.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
